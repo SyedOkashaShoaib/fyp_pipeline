@@ -1,0 +1,67 @@
+{
+  "environment": {
+    "python": "3.13.0",
+    "torch": "2.14.1+cu132",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "transformers": "4.46.3",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_memory_gb": 19.99,
+    "cuda": "13.2",
+    "bf16_supported": true
+  },
+  "args": {
+    "model": ".\\models\\agro-nt-1b",
+    "revision": "9be6ae0d285053466d76ec50b042b8628065efd0",
+    "windows": ".\\data\\benchmark_500.fasta",
+    "device": "cuda",
+    "dtype": "fp32",
+    "stages": "hooks,determinism",
+    "layers": "4,12,20,30,40",
+    "shard_layer": 20,
+    "max_seqs": 8,
+    "batch_sizes": "1",
+    "warmup": 2,
+    "precision_n": 32,
+    "reduced": "bf16,fp16",
+    "extract_batch": 16,
+    "shard_windows": 100,
+    "simulate_kill_after": null,
+    "corpus_sizes": "80000,150000",
+    "strict": true,
+    "outdir": ".\\bench_out\\validation_test"
+  },
+  "hooks": {
+    "n_hidden_states": 41,
+    "n_blocks": 40,
+    "block_path": "esm.encoder.layer",
+    "layers": {
+      "4": {
+        "max_abs_diff": 0.0,
+        "identical": true
+      },
+      "12": {
+        "max_abs_diff": 0.0,
+        "identical": true
+      },
+      "20": {
+        "max_abs_diff": 0.0,
+        "identical": true
+      },
+      "30": {
+        "max_abs_diff": 0.0,
+        "identical": true
+      },
+      "40": {
+        "max_abs_diff": 2852.562255859375,
+        "identical": false
+      }
+    }
+  },
+  "determinism": {
+    "4": 0.0,
+    "12": 0.0,
+    "20": 0.0,
+    "30": 0.0,
+    "40": 0.0
+  }
+}

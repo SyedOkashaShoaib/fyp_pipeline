@@ -1,0 +1,63 @@
+{
+  "environment": {
+    "python": "3.13.0",
+    "torch": "2.14.1+cu132",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "transformers": "4.46.3",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_memory_gb": 19.99,
+    "cuda": "13.2",
+    "bf16_supported": true
+  },
+  "args": {
+    "model": ".\\models\\agro-nt-1b",
+    "revision": "9be6ae0d285053466d76ec50b042b8628065efd0",
+    "windows": ".\\data\\benchmark_500.fasta",
+    "device": "cuda",
+    "dtype": "fp32",
+    "stages": "smoke,tokens",
+    "layers": "4,12,20,30,40",
+    "shard_layer": null,
+    "max_seqs": 8,
+    "batch_sizes": "1",
+    "warmup": 2,
+    "precision_n": 32,
+    "reduced": "bf16,fp16",
+    "extract_batch": 16,
+    "shard_windows": 100,
+    "simulate_kill_after": null,
+    "corpus_sizes": "80000,150000",
+    "strict": false,
+    "outdir": ".\\bench_out\\smoke_test"
+  },
+  "smoke": {
+    "config": {
+      "hidden_size": 1500,
+      "num_hidden_layers": 40,
+      "num_attention_heads": 20,
+      "vocab_size": 4105,
+      "max_position_embeddings": 1026
+    },
+    "parameters": 991261206,
+    "matches_expected": true
+  },
+  "tokens": {
+    "min": 171,
+    "median": 171.0,
+    "max": 171,
+    "first_tokens": [
+      "<cls>",
+      "GTGGCT",
+      "CAATTG",
+      "ATGTGG"
+    ],
+    "last_tokens": [
+      "A",
+      "G",
+      "C",
+      "C"
+    ],
+    "single_nt_tokens_window1": 4,
+    "windows_with_N": 0
+  }
+}

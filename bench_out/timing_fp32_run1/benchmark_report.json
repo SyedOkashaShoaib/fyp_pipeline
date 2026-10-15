@@ -1,0 +1,41 @@
+{
+  "environment": {
+    "python": "3.13.0",
+    "torch": "2.14.1+cu132",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "transformers": "4.46.3",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_memory_gb": 19.99,
+    "cuda": "13.2",
+    "bf16_supported": true
+  },
+  "args": {
+    "model": ".\\models\\agro-nt-1b",
+    "revision": "9be6ae0d285053466d76ec50b042b8628065efd0",
+    "windows": ".\\data\\benchmark_500.fasta",
+    "device": "cuda",
+    "dtype": "fp32",
+    "stages": "sweep",
+    "layers": "4,12,20,30,40",
+    "shard_layer": null,
+    "max_seqs": 500,
+    "batch_sizes": "32",
+    "warmup": 2,
+    "precision_n": 32,
+    "reduced": "bf16,fp16",
+    "extract_batch": 16,
+    "shard_windows": 100,
+    "simulate_kill_after": null,
+    "corpus_sizes": "80000,150000",
+    "strict": true,
+    "outdir": ".\\bench_out\\timing_fp32_run1"
+  },
+  "sweep": [
+    {
+      "batch_size": 32,
+      "windows_per_s": 31.018622328169997,
+      "tokens_per_s": 5309.776717815657,
+      "peak_gb": 6.107395172119141
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "environment": {
+    "python": "3.13.0",
+    "torch": "2.14.1+cu132",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "transformers": "4.46.3",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_memory_gb": 19.99,
+    "cuda": "13.2",
+    "bf16_supported": true
+  },
+  "args": {
+    "model": ".\\models\\agro-nt-1b",
+    "revision": "9be6ae0d285053466d76ec50b042b8628065efd0",
+    "windows": ".\\data\\benchmark_500.fasta",
+    "device": "cuda",
+    "dtype": "fp32",
+    "stages": "precision",
+    "layers": "4,12,20,30,40",
+    "shard_layer": null,
+    "max_seqs": 32,
+    "batch_sizes": "1,2,4,8,16,32,64,128",
+    "warmup": 2,
+    "precision_n": 32,
+    "reduced": "bf16,fp16",
+    "extract_batch": 16,
+    "shard_windows": 100,
+    "simulate_kill_after": null,
+    "corpus_sizes": "80000,150000",
+    "strict": true,
+    "outdir": ".\\bench_out\\precision_test"
+  },
+  "precision": {
+    "bf16": {
+      "4": {
+        "finite": true,
+        "cos_min": 0.9999594688415527,
+        "cos_mean": 0.9999944567680359,
+        "rel_err_mean": 0.005220446269959211,
+        "rel_err_max": 0.018193934112787247,
+        "max_abs_activation": 307.78289794921875
+      },
+      "12": {
+        "finite": true,
+        "cos_min": 0.9986371994018555,
+        "cos_mean": 0.9999737739562988,
+        "rel_err_mean": 0.008295919746160507,
+        "rel_err_max": 0.052615292370319366,
+        "max_abs_activation": 338.0377502441406
+      },
+      "20": {
+        "finite": true,
+        "cos_min": 0.9909923672676086,
+        "cos_mean": 0.9999390840530396,
+        "rel_err_mean": 0.01131526567041874,
+        "rel_err_max": 0.16409285366535187,
+        "max_abs_activation": 449.620361328125
+      },
+      "30": {
+        "finite": true,
+        "cos_min": 0.9882351160049438,
+        "cos_mean": 0.9998300671577454,
+        "rel_err_mean": 0.0185707937926054,
+        "rel_err_max": 0.17723187804222107,
+        "max_abs_activation": 581.22265625
+      },
+      "40": {
+        "finite": true,
+        "cos_min": 0.9663260579109192,
+        "cos_mean": 0.9988104104995728,
+        "rel_err_mean": 0.0471881665289402,
+        "rel_err_max": 0.2707946300506592,
+        "max_abs_activation": 22.537517547607422
+      }
+    },
+    "fp16": {
+      "4": {
+        "finite": true,
+        "cos_min": 0.9999988079071045,
+        "cos_mean": 1.0,
+        "rel_err_mean": 0.0006448054336942732,
+        "rel_err_max": 0.0022748506162315607,
+        "max_abs_activation": 307.78289794921875
+      },
+      "12": {
+        "finite": true,
+        "cos_min": 0.9999645352363586,
+        "cos_mean": 0.9999996423721313,
+        "rel_err_mean": 0.001024212222546339,
+        "rel_err_max": 0.008432385511696339,
+        "max_abs_activation": 338.0377502441406
+      },
+      "20": {
+        "finite": true,
+        "cos_min": 0.9999434947967529,
+        "cos_mean": 0.999998927116394,
+        "rel_err_mean": 0.0014316263841465116,
+        "rel_err_max": 0.01306626945734024,
+        "max_abs_activation": 449.620361328125
+      },
+      "30": {
+        "finite": true,
+        "cos_min": 0.9998231530189514,
+        "cos_mean": 0.9999973177909851,
+        "rel_err_mean": 0.0023251406382769346,
+        "rel_err_max": 0.021104175597429276,
+        "max_abs_activation": 581.22265625
+      },
+      "40": {
+        "finite": true,
+        "cos_min": 0.9991269111633301,
+        "cos_mean": 0.9999808073043823,
+        "rel_err_mean": 0.005936507601290941,
+        "rel_err_max": 0.04239344969391823,
+        "max_abs_activation": 22.537517547607422
+      }
+    }
+  }
+}

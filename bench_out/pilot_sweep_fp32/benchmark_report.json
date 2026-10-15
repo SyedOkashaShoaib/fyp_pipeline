@@ -1,0 +1,71 @@
+{
+  "environment": {
+    "python": "3.13.0",
+    "torch": "2.14.1+cu132",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "transformers": "4.46.3",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_memory_gb": 19.99,
+    "cuda": "13.2",
+    "bf16_supported": true
+  },
+  "args": {
+    "model": ".\\models\\agro-nt-1b",
+    "revision": "9be6ae0d285053466d76ec50b042b8628065efd0",
+    "windows": ".\\data\\benchmark_500.fasta",
+    "device": "cuda",
+    "dtype": "fp32",
+    "stages": "sweep",
+    "layers": "4,12,20,30,40",
+    "shard_layer": null,
+    "max_seqs": 64,
+    "batch_sizes": "1,2,4,8,16,32",
+    "warmup": 2,
+    "precision_n": 32,
+    "reduced": "bf16,fp16",
+    "extract_batch": 16,
+    "shard_windows": 100,
+    "simulate_kill_after": null,
+    "corpus_sizes": "80000,150000",
+    "strict": true,
+    "outdir": ".\\bench_out\\pilot_sweep_fp32"
+  },
+  "sweep": [
+    {
+      "batch_size": 1,
+      "windows_per_s": 22.949022706613746,
+      "tokens_per_s": 3927.984338106211,
+      "peak_gb": 3.8288655281066895
+    },
+    {
+      "batch_size": 2,
+      "windows_per_s": 27.00604989529928,
+      "tokens_per_s": 4622.53554041206,
+      "peak_gb": 3.9005489349365234
+    },
+    {
+      "batch_size": 4,
+      "windows_per_s": 29.29842565433125,
+      "tokens_per_s": 5015.262648614632,
+      "peak_gb": 3.981907367706299
+    },
+    {
+      "batch_size": 8,
+      "windows_per_s": 29.384760255251056,
+      "tokens_per_s": 5024.79400364793,
+      "peak_gb": 4.207078456878662
+    },
+    {
+      "batch_size": 16,
+      "windows_per_s": 30.262585618292164,
+      "tokens_per_s": 5174.902140727961,
+      "peak_gb": 4.657430648803711
+    },
+    {
+      "batch_size": 32,
+      "windows_per_s": 30.717961310344656,
+      "tokens_per_s": 5257.571065523677,
+      "peak_gb": 5.56739616394043
+    }
+  ]
+}
