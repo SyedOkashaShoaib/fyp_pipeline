@@ -1,0 +1,11 @@
+.venv/
+models/
+*.fa
+*.fa.fai
+*.fasta
+*.fai
+bench_out*/
+bench_kill*/
+shards_*/
+*.npy
+__pycache__/

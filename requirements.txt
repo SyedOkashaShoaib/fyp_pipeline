@@ -1,0 +1,9 @@
+# Install PyTorch FIRST, separately, per machine (see README step 2).
+# Everything else is pinned here. transformers 4.46.3 is the version the
+# scripts were tested against; record whatever torch version you install.
+transformers==4.46.3
+huggingface_hub
+pyfaidx
+pandas
+numpy
+openpyxl
