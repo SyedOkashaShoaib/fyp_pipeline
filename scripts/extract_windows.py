@@ -50,7 +50,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--fasta", required=True)
-    ap.add_argument("--length", type=int, default=1000)
+    ap.add_argument("--length", type=int, default=1002)
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
 
@@ -61,7 +61,8 @@ def main():
         raise SystemExit(f"chromosomes not in FASTA: {missing[:5]} "
                          f"(FASTA has e.g. {list(fa.keys())[:3]})")
 
-    n_ok = n_skip = n_mismatch = 0
+    n_ok = n_skip = n_mismatch = n_nonacgt = 0
+    bad_id = []
     h = hashlib.sha256()
     with open(a.out, "w") as out:
         for r in m.itertuples(index=False):
@@ -69,9 +70,15 @@ def main():
             if seq is None or len(seq) != a.length:
                 n_skip += 1
                 continue
-            # cross-check against the manifest's own coordinates at L=1000
-            if a.length == 1000 and (s, e) != (r.prom_start, r.prom_end):
+
+            d = a.length - 1000
+            expect = ((r.prom_start - d, r.prom_end) if r.strand == "+"
+                      else (r.prom_start, r.prom_end + d))
+            if (s, e) != expect:
                 n_mismatch += 1
+            if len(seq) - sum(seq.count(c) for c in "ACGT"):
+                n_nonacgt += 1
+                bad_id.append(r.gene_id)
             header = (f">{r.gene_id} {r.chrom}:{s}-{e}({r.strand}) "
                       f"tss={r.tss} len={a.length}")
             out.write(header + "\n")
@@ -81,8 +88,8 @@ def main():
             n_ok += 1
 
     print(f"wrote {n_ok} windows to {a.out}; skipped {n_skip} at contig edges")
-    if a.length == 1000:
-        print(f"coordinate mismatches against manifest: {n_mismatch}")
+    print(f"coordinate mismatches against manifest: {n_mismatch}")
+    print(f"windows with non-ACGT bases: {n_nonacgt} {bad_id[:10]}")
     print(f"sequence-content sha256: {h.hexdigest()[:16]}…")
 
 
