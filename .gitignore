@@ -9,3 +9,5 @@ bench_kill*/
 shards_*/
 *.npy
 __pycache__/
+audit/
+data/motifs/*
