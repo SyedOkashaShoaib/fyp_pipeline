@@ -10,4 +10,4 @@ shards_*/
 *.npy
 __pycache__/
 audit/
-data/motifs/*
+data/motifs/raw/*.zip
