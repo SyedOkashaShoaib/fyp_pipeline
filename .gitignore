@@ -13,3 +13,4 @@ audit/
 data/motifs/raw/*.zip
 Proposals/
 
+*.npz
