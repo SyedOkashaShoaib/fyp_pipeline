@@ -11,3 +11,5 @@ shards_*/
 __pycache__/
 audit/
 data/motifs/raw/*.zip
+Proposals/
+
