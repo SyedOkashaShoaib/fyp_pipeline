@@ -233,7 +233,7 @@ class SAE(torch.nn.Module):
     def forward(self, x):
         f = self.encode(x)
         return self.decode(f), f
-
+gg
     @torch.no_grad()
     def unit_norm_decoder(self):
         self.W_dec.div_(self.W_dec.norm(dim=1, keepdim=True).clamp_min(1e-8))

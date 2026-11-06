@@ -125,9 +125,9 @@ def cmd_crossseed(a):
     groups = {}
     for rdir in finished_runs(a.outdir):
         c = load_json(os.path.join(rdir, "config.json"))
-        groups.setdefault((c["kind"], c["l1"], c["k"], c["steps"]), []).append(rdir)
+        groups.setdefault((c["kind"], c["width"], c["l1"], c["k"], c["steps"]), []).append(rdir)
     results = []
-    for (kind, l1, k, steps), dirs in sorted(groups.items(), key=str):
+    for (kind, width, l1, k, steps), dirs in sorted(groups.items(), key=str):
         if len(dirs) < 2:
             continue
         cos_all, cos_active, matched = [], [], []
@@ -140,7 +140,7 @@ def cmd_crossseed(a):
             fp = os.path.join(d1, "feature_freq.npy")
             if os.path.exists(fp):
                 cos_active.append(float(c12[np.load(fp) > 0].mean()))
-        r = dict(kind=kind, l1=l1, k=k, steps=steps, runs=[os.path.basename(d) for d in dirs],
+        r = dict(kind=kind, width=width, l1=l1, k=k, steps=steps, runs=[os.path.basename(d) for d in dirs],
                  mean_max_cos=float(np.mean(cos_all)), mean_max_cos_active=float(np.mean(cos_active)) if cos_active else None,
                  matched_frac=float(np.mean(matched)), pairs=len(cos_all))
         results.append(r)
@@ -284,7 +284,7 @@ def cmd_summary(a):
         name = os.path.basename(rdir)
         c = load_json(os.path.join(rdir, "config.json"))
         d = load_json(os.path.join(rdir, "DONE.json"))
-        r = dict(name=name, kind=c["kind"], l1=c["l1"], k=c["k"], seed=c["seed"], steps=c["steps"],
+        r = dict(name=name, kind=c["kind"], width=c["width"], l1=c["l1"], k=c["k"], seed=c["seed"], steps=c["steps"],
                  passes=round(d["passes"], 2), matmul=c["matmul"], minutes=round(d["seconds"] / 60, 1))
         ep = os.path.join(rdir, "eval.json")
         if os.path.exists(ep):

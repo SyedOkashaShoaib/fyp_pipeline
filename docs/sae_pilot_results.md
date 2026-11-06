@@ -17,7 +17,7 @@ Two issues of interpretation affect this outcome, and both arose after results w
 - **Loss recovered.** The test replaced `<mask>` vectors that the SAE never trained on. Leaving those positions untouched raises loss recovered at λ = 1.5 from 0.829 to 0.919.
 - **Cross-seed matching.** The proposal's wording can be read as a gate on the whole dictionary or as a rule for which features count as matched.
 
-**Recommendation.** Carry forward ReLU/L1 at λ = 1.5, adopting both readings, with no numerical threshold lowered. It then passes every gate, with 2,081 features stable across all three seeds. Its limitation is density, at 390 active features per token. Because both readings were chosen after seeing results, this report states that openly and asks for the supervisor's judgement (Section 7).
+**Recommendation.** Carry forward ReLU/L1 at λ = 1.5, adopting both readings, with no numerical threshold lowered. It then passes every gate, with 2,081 features stable across all three seeds. Its limitation is density, at 390 active features per token. Because both readings were chosen after seeing results, this report states that openly and asks for the supervisor's judgement (Section 7). Later 8× tests (Section 4.6) show a strong alternative at λ = 1.5, which needs an amendment to §5.3.
 
 ## 2. Purpose and scope
 
@@ -135,6 +135,26 @@ The corpus is sufficient for a 6,000-feature dictionary on the evidence measured
 
 Two forced process terminations during a real GPU run resumed to weights bit-identical to an uninterrupted run. The grid was also interrupted once during the pilot, and resumed from its checkpoint with logged values reproduced exactly at step 13,000. This satisfies the resumability requirement of §6.3.
 
+### 4.6 Tests of an 8× dictionary
+
+ReLU/L1 was also trained at 12,000 features with three seeds and the same settings. λ = 3 ran first, with a criterion stated in advance: 8× would be preferred if FVU reached about 0.20 with cross-seed at or above 0.70 and loss recovered near 0.90. FVU reached only 0.276, so that criterion was not met. λ = 2 and 1.5 were added after seeing that result, to test whether FVU 0.20 is reachable at this width.
+
+**Table 3. 8× settings against the 4× settings**
+
+| Measure (mean of 3 seeds) | 4×, λ = 1.5 | 4×, λ = 3 | 8×, λ = 1.5 | 8×, λ = 2 | 8×, λ = 3 |
+| --- | --- | --- | --- | --- | --- |
+| Features | 6,000 | 6,000 | 12,000 | 12,000 | 12,000 |
+| Active features per token (L0) | 390 | 159 | 491 | 332 | 188 |
+| Median feature frequency, seed 1 | 6.9% | 2.8% | 4.3% | 2.9% | 1.6% |
+| FVU (≤ 0.20) | **0.196** | 0.297 | **0.177** | 0.215 | 0.276 |
+| Loss recovered, as defined (≥ 0.90) | 0.829 | 0.708 | 0.881 | 0.862 | 0.789 |
+| Loss recovered, masked positions untouched | **0.919** | 0.862 | **0.953** | **0.941** | **0.925** |
+| Mean max cosine (≥ 0.70) | 0.643 | **0.737** | 0.594 | 0.647 | **0.706** |
+| Stable in all 3 seeds | 2,081 | 2,931 | 3,486 | 4,231 | 5,141 |
+| Inactive features | **0** | **0** | **0** | **0** | **0** |
+
+No 8× setting reaches both the FVU gate and the dictionary-wide cross-seed mean, so the trade-off in Section 4.1 persists at this width. At λ = 1.5, 8× improves on 4× in FVU, loss recovered under both definitions, stable features (68% more) and median feature frequency. It is worse in active features per token (491 against 390) and in the cross-seed mean (0.594 against 0.643). All 8× runs converged, at about 15.6 minutes per run. Only λ = 3 at 8× has more stable features than the 4,800 assumed in §6.6.5.
+
 ## 5. Issues of interpretation
 
 Both issues below determine whether any setting passes, and both were identified after the results were seen. They are reported as such, and neither has been adopted.
@@ -164,7 +184,7 @@ Single-seed rows show the seed 1 value in both columns. A substantial part of th
 | Dictionary gate (as written in the pilot protocol, and tested in Table 1) | The mean over all features must reach 0.70 | Only λ = 3, 5, 7 and 15 pass |
 | Per-feature rule | 0.70 decides which features count as matched; the matched fraction is reported, not gated | No setting fails; the number of stable features becomes the quantity of interest |
 
-If the per-feature reading is adopted, the power analysis needs revisiting. §6.6.5 assumes 4,800 features screened in discovery, and only λ = 15 has more stable features than that.
+If the per-feature reading is adopted, the power analysis needs revisiting. §6.6.5 assumes 4,800 features screened in discovery, and only λ = 15 at 4× and λ = 3 at 8× (Section 4.6) have more stable features than that.
 
 ## 6. Deviations and limitations
 
@@ -183,6 +203,7 @@ If the per-feature reading is adopted, the power analysis needs revisiting. §6.
 - The promoter component is 44,137 windows, against 45,119 in §6.4, because windows with non-ACGT bases are removed.
 - TopK also uses three seeds. §6.4 names three seeds only for the ReLU/L1 baseline.
 - The region-class definitions and sizes in Section 3.2 are not specified in the proposal.
+- The 8× tests in Section 4.6 go beyond §5.3, which withdrew scale tests.
 
 ### 6.3 Limitations
 
@@ -203,9 +224,9 @@ The proposal allows the pilot to revise each gate, and the pilot protocol requir
 | B | TopK, k = 128, trained longer | The same two readings; more training | Recovered 0.943; 795 stable features; FVU 0.204, not yet shown to reach 0.20 | Fewest stable features |
 | C | ReLU/L1, λ = 3 | FVU gate raised to about 0.30; loss-recovered gate also lowered, or the two readings adopted as well | L0 159; 2,931 stable features; recovered 0.862 | Thresholds lowered after seeing results |
 | D | None | All gates kept as defined | “No setting in the grid passes” (§7.3): features reported descriptively only; the representation question passes to the linear probe | Limits the feature-level work planned for FYP 2 |
-| E | Test an 8× dictionary (12,000 features) first | Amendment to §5.3, which withdrew scale tests as “narrow question; not required by any core outcome” | Not run. Might allow a sparser setting to reach FVU 0.20; the effect on stability is unknown | About 1 hour of GPU for one setting (estimated); more features to screen |
+| E | ReLU/L1, λ = 1.5, 8× dictionary (12,000 features) | The same two readings as A; amendment to §5.3, which withdrew scale tests as “narrow question; not required by any core outcome” | FVU 0.177; recovered 0.953; 3,486 stable features | Added after seeing results; highest L0 tested (491); lowest cross-seed mean of the ReLU/L1 settings (0.594); twice as many features to screen |
 
-**Why A is recommended.** It is the only setting that reaches the FVU gate, and it does so without lowering any numerical threshold. It also has more stable features than the other high-fidelity option, TopK at k = 128.
+**Why A is recommended.** It is the only setting that reaches the FVU gate, and it does so without lowering any numerical threshold. It also has more stable features than the other high-fidelity option, TopK at k = 128. It needs no amendment to §5.3, and has the lowest L0 of the settings that reach the FVU gate. Option E is the strongest alternative: it beats A on FVU, loss recovered and stable features, and its features fire less often, at the costs listed above.
 
 **The case against A.** Both readings were chosen after the gates failed, which is the kind of post-hoc flexibility the pilot exists to prevent. No response label was involved, so this cannot have favoured any drought result, but a reader may still treat it with caution. At 390 active features per token, individual features may also be harder to interpret.
 
@@ -214,7 +235,7 @@ The proposal allows the pilot to revise each gate, and the pilot protocol requir
 1. Which option should be carried forward?
 2. Is the masked-position definition of loss recovered acceptable as the gate measurement?
 3. Should the cross-seed criterion be a dictionary gate or a per-feature rule?
-4. Should the 8× test be run before deciding?
+4. Should the 8× dictionary (option E) be adopted instead of A, with an amendment to §5.3?
 
 ## 8. Open items and reproducibility
 
@@ -230,16 +251,16 @@ The proposal allows the pilot to revise each gate, and the pilot protocol requir
 | --- | --- |
 | Repository base commit | `53bc99f` holds the pilot code and matches the hashes below. Run configs record `abd0348`, because the runs predate the commit |
 | `scripts/train_sae.py`, grid version | SHA-256 `e74d97b0072473e2…`, recorded in each run's `config.json` |
-| `scripts/eval_sae.py` | SHA-256 `d0bc2a8204813af9…` |
+| `scripts/eval_sae.py` | SHA-256 `0818f22eb87926b1…`, changed since `53bc99f` to keep dictionary widths separate in cross-seed matching |
 | `scripts/build_corpus_regions.py` | SHA-256 `b4f7836630c42bb8…`; seed 20261104 |
 | New-window content hash | `564adbfb7e3297f0` |
 | Seeds | Held-out split 20261105; loss-recovered masks 20261106; SAE seeds 1, 2, 3 |
 | Activation stores | `activations/L13/` (promoters), `activations/regions/L13/` (new classes), manifests hashed |
 | Outputs | `sae_pilot/`: per-run weights, logs and configs; `summary.tsv`; `crossseed.json`; `loss_recovered.json`; `loss_recovered_unmasked.json` |
-| Protocol | `docs/sae_pilot_protocol.md`; grid in `docs/sae_pilot_grid.json` |
+| Protocol | `docs/sae_pilot_protocol.md`; grids in `docs/sae_pilot_grid.json` and `docs/sae_pilot_grid_8x.json` |
 | Tests | `scripts/test_train_sae.py` and `scripts/test_eval_sae.py`, passing |
 | Environment | Python 3.13.0, PyTorch 2.14.1+cu132, Transformers 4.46.3, NVIDIA RTX 4000 Ada (20 GB), Windows 11 |
-| Compute | About 8.8 minutes per run, about 3.5 hours for the grid; 57 GB of storage |
+| Compute | About 8.8 minutes per run, about 3.5 hours for the 4× grid; about 2.3 hours for the 8× runs; 58 GB of storage |
 
 ## Appendix A. Per-seed results
 
