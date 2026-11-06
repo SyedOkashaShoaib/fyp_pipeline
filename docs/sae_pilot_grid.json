@@ -1,0 +1,159 @@
+{
+ "defaults": {
+  "passes": 5.0,
+  "init_norm": 0.1,
+  "l1_warmup": 0.0,
+  "matmul": "tf32",
+  "lr": 0.0002,
+  "batch": 4096,
+  "width": 6000,
+  "log_every": 500,
+  "ckpt_minutes": 2
+ },
+ "runs": [
+  {
+   "name": "relu_l1.5_s1",
+   "kind": "relu",
+   "l1": 1.5,
+   "seed": 1
+  },
+  {
+   "name": "relu_l1.5_s2",
+   "kind": "relu",
+   "l1": 1.5,
+   "seed": 2
+  },
+  {
+   "name": "relu_l1.5_s3",
+   "kind": "relu",
+   "l1": 1.5,
+   "seed": 3
+  },
+  {
+   "name": "relu_l3_s1",
+   "kind": "relu",
+   "l1": 3,
+   "seed": 1
+  },
+  {
+   "name": "relu_l3_s2",
+   "kind": "relu",
+   "l1": 3,
+   "seed": 2
+  },
+  {
+   "name": "relu_l3_s3",
+   "kind": "relu",
+   "l1": 3,
+   "seed": 3
+  },
+  {
+   "name": "relu_l5_s1",
+   "kind": "relu",
+   "l1": 5,
+   "seed": 1
+  },
+  {
+   "name": "relu_l5_s2",
+   "kind": "relu",
+   "l1": 5,
+   "seed": 2
+  },
+  {
+   "name": "relu_l5_s3",
+   "kind": "relu",
+   "l1": 5,
+   "seed": 3
+  },
+  {
+   "name": "relu_l7_s1",
+   "kind": "relu",
+   "l1": 7,
+   "seed": 1
+  },
+  {
+   "name": "relu_l7_s2",
+   "kind": "relu",
+   "l1": 7,
+   "seed": 2
+  },
+  {
+   "name": "relu_l7_s3",
+   "kind": "relu",
+   "l1": 7,
+   "seed": 3
+  },
+  {
+   "name": "relu_l15_s1",
+   "kind": "relu",
+   "l1": 15,
+   "seed": 1
+  },
+  {
+   "name": "relu_l15_s2",
+   "kind": "relu",
+   "l1": 15,
+   "seed": 2
+  },
+  {
+   "name": "relu_l15_s3",
+   "kind": "relu",
+   "l1": 15,
+   "seed": 3
+  },
+  {
+   "name": "topk_k32_s1",
+   "kind": "topk",
+   "k": 32,
+   "seed": 1
+  },
+  {
+   "name": "topk_k32_s2",
+   "kind": "topk",
+   "k": 32,
+   "seed": 2
+  },
+  {
+   "name": "topk_k32_s3",
+   "kind": "topk",
+   "k": 32,
+   "seed": 3
+  },
+  {
+   "name": "topk_k64_s1",
+   "kind": "topk",
+   "k": 64,
+   "seed": 1
+  },
+  {
+   "name": "topk_k64_s2",
+   "kind": "topk",
+   "k": 64,
+   "seed": 2
+  },
+  {
+   "name": "topk_k64_s3",
+   "kind": "topk",
+   "k": 64,
+   "seed": 3
+  },
+  {
+   "name": "topk_k128_s1",
+   "kind": "topk",
+   "k": 128,
+   "seed": 1
+  },
+  {
+   "name": "topk_k128_s2",
+   "kind": "topk",
+   "k": 128,
+   "seed": 2
+  },
+  {
+   "name": "topk_k128_s3",
+   "kind": "topk",
+   "k": 128,
+   "seed": 3
+  }
+ ]
+}

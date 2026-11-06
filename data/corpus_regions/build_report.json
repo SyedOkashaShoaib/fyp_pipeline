@@ -1,0 +1,109 @@
+{
+  "classes": {
+    "intron": {
+      "candidates": 10452,
+      "kept": 9204,
+      "genes": 7463,
+      "forbidden": 163,
+      "overlap": 70
+    },
+    "utr5_tss": {
+      "candidates": 19048,
+      "kept": 10000,
+      "genes": 10000,
+      "forbidden": 577,
+      "overlap": 1040
+    },
+    "splice": {
+      "candidates_genes": 28715,
+      "kept": 10000,
+      "donor": 4379,
+      "acceptor": 5621,
+      "forbidden": 1536,
+      "overlap": 11684
+    },
+    "intergenic": {
+      "target": 15000,
+      "kept": 15002,
+      "pool": 184787,
+      "shortfall_total": 0,
+      "shortfall_cells": 0,
+      "smd_gc": 0.0042951790161352395,
+      "smd_te": 0.01893944064384916,
+      "mean_gc": 0.4587349420077323,
+      "mean_te": 0.20317191240768695,
+      "promoter_mean_gc": 0.45842146045268145,
+      "promoter_mean_te": 0.1973665405442146,
+      "overlap": 3680,
+      "cell_full": 149259
+    },
+    "repeat": {
+      "target": 15000,
+      "kept": 15000,
+      "elements_eligible": 1288193,
+      "by_superfamily": {
+        "RLG": 1858,
+        "RLC": 1858,
+        "DTC": 1859,
+        "RLX": 1858,
+        "RIX": 1859,
+        "DTM": 1859,
+        "DTX": 1859,
+        "DTH": 1859,
+        "DTA": 74,
+        "DHH": 48,
+        "DTT": 9
+      },
+      "elements_by_superfamily": {
+        "RLG": 753496,
+        "RLC": 281333,
+        "DTC": 208003,
+        "RLX": 64200,
+        "RIX": 28545,
+        "DTM": 6828,
+        "DTX": 4700,
+        "DTH": 4337,
+        "DTA": 175,
+        "DHH": 145,
+        "DTT": 26
+      }
+    }
+  },
+  "seed": 20261104,
+  "length_bp": 1002,
+  "gene_pad": 2000,
+  "n_windows": 59206,
+  "n_tokens": 9887402,
+  "rejected": {
+    "non_acgt": 18853,
+    "duplicate": 37
+  },
+  "windows_content_sha256": "564adbfb7e3297f0b8bcf017953cbec57356c419036fbf8112a880a588675227",
+  "manifest_sha256": "2b05da80249f677ec76462661a861d2861a017307f18bbb5eeac0842b1db3bf9",
+  "inputs": {
+    "IWGSC_v1.1_HC_20170706.gff3": "050da891b47dbd7687c7d91c6e18ec5c41cf988843e131fac1f96be24f519ecb",
+    "IWGSC_v1.1_LC_20170706.gff3": "7d9e574d110e93cf293bcaa99c77b7e5f23ae7dd083178195d4e789add636f2a",
+    "corpus_promoters_L1002.tsv": "5b045ad41141aeaa97721308078111bc0f5f5be0f13e50c1fa80858850c39c48",
+    "exclusion_manifest.tsv": "1ba579b6fd6bc94b5823fe66592a4014287efef92d77631b13b14e39a7dece8c"
+  },
+  "by_class": {
+    "intergenic": 15002,
+    "repeat": 15000,
+    "splice": 10000,
+    "utr5_tss": 10000,
+    "intron": 9204
+  },
+  "by_subgenome": {
+    "B": 20637,
+    "A": 19529,
+    "D": 18075,
+    "n": 965
+  },
+  "gc_by_class": {
+    "intergenic": 0.4587,
+    "intron": 0.4262,
+    "repeat": 0.476,
+    "splice": 0.4538,
+    "utr5_tss": 0.5576
+  }
+}
