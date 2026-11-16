@@ -64,6 +64,37 @@ class Small(unittest.TestCase):
         f = m.encode(torch.randn(10, 16))
         self.assertTrue(((f > 0).sum(-1) <= 5).all())
 
+    def test_batchtopk_keeps_k_per_token_on_average_in_training(self):
+        m = ts.SAE(16, 64, "batchtopk", 5, generator=torch.Generator().manual_seed(0))
+        x = torch.randn(10, 16)
+        f = m.encode(x)
+        self.assertEqual(int((f > 0).sum()), 50)
+        self.assertGreater((f > 0).sum(-1).max().item(), (f > 0).sum(-1).min().item())
+        self.assertGreater(m.threshold.item(), 0)
+        self.assertEqual(int(m.threshold_updates), 1)
+
+    def test_batchtopk_eval_uses_threshold(self):
+        m = ts.SAE(16, 64, "batchtopk", 5, generator=torch.Generator().manual_seed(0))
+        x = torch.randn(10, 16)
+        m.encode(x)
+        m.eval()
+        z = torch.relu((x - m.b_dec) @ m.W_enc + m.b_enc)
+        f = m.encode(x)
+        self.assertTrue(torch.equal(f > 0, z > m.threshold))
+        self.assertEqual(int(m.threshold_updates), 1)
+
+    def test_batchtopk_threshold_is_running_average(self):
+        m = ts.SAE(4, 8, "batchtopk", 1)
+        m.update_threshold(torch.tensor([2.0, 1.0]))
+        m.update_threshold(torch.tensor([3.0, 0.0]))
+        self.assertAlmostEqual(m.threshold.item(), (1 - ts.THRESHOLD_EMA) * 1.0 + ts.THRESHOLD_EMA * 3.0, places=6)
+
+    def test_monitor_restores_training_mode(self):
+        m = ts.SAE(16, 64, "batchtopk", 5, generator=torch.Generator().manual_seed(0))
+        ts.monitor(m, torch.randn(10, 16))
+        self.assertTrue(m.training)
+        self.assertEqual(int(m.threshold_updates), 0)
+
     def test_relu_loss_has_l1_term(self):
         m = ts.SAE(16, 64, "relu", generator=torch.Generator().manual_seed(0))
         x = torch.randn(10, 16)
@@ -206,6 +237,18 @@ class Pipeline(unittest.TestCase):
         os.remove(os.path.join(self.out, "prep.json"))
         ts.cmd_prepare(argparse.Namespace(stores=self.stores, outdir=self.out))
         self.assertTrue(os.path.exists(os.path.join(self.out, "prep.json")))
+
+    def test_batchtopk_kill_and_resume_matches_clean_run(self):
+        ts.train_run(run_args(self.out, name="bclean", kind="batchtopk", k=3))
+        with self.assertRaises(SystemExit):
+            ts.train_run(run_args(self.out, name="bkilled", kind="batchtopk", k=3, kill_after=11))
+        ts.train_run(run_args(self.out, name="bkilled", kind="batchtopk", k=3))
+        a = torch.load(os.path.join(self.out, "runs", "bclean", "final.pt"), weights_only=False)["state"]
+        b = torch.load(os.path.join(self.out, "runs", "bkilled", "final.pt"), weights_only=False)["state"]
+        self.assertIn("threshold", a)
+        self.assertGreater(a["threshold"].item(), 0)
+        for k in a:
+            self.assertTrue(torch.equal(a[k], b[k]), k)
 
     def test_changed_settings_refused(self):
         with self.assertRaises(SystemExit):

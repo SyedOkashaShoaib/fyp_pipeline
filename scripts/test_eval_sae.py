@@ -113,6 +113,21 @@ class Hook(unittest.TestCase):
         self.assertEqual(len(self.block._forward_hooks), 0)
 
 
+class BatchTopKRoundtrip(unittest.TestCase):
+    def test_reloaded_batchtopk_keeps_threshold_and_eval_mode(self):
+        with tempfile.TemporaryDirectory() as d:
+            m = ts.SAE(8, 32, "batchtopk", 3, generator=torch.Generator().manual_seed(0))
+            m.encode(torch.randn(6, 8))
+            m.eval()
+            torch.save({"state": m.state_dict(), "config": dict(width=32, kind="batchtopk", k=3),
+                        "mean": torch.zeros(8), "scale": 1.0}, os.path.join(d, "final.pt"))
+            n, *_ = ev.load_sae(d, "cpu")
+            self.assertFalse(n.training)
+            self.assertEqual(n.threshold.item(), m.threshold.item())
+            x = torch.randn(4, 8)
+            self.assertTrue(torch.equal(m(x)[0], n(x)[0]))
+
+
 class Roundtrip(unittest.TestCase):
     def test_saved_sae_reloads_identically(self):
         with tempfile.TemporaryDirectory() as d:

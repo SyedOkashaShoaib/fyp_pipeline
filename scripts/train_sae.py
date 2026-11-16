@@ -203,16 +203,26 @@ def cmd_prepare(a):
 
 # --------------------------------------------------------------------- model
 
+THRESHOLD_EMA = 0.001
+
+
 class SAE(torch.nn.Module):
-    """x_hat = W_dec f + b_dec, on centred, rescaled input x."""
+    """x_hat = W_dec f + b_dec, on centred, rescaled input x.
+
+    batchtopk keeps the k * batch largest activations across a training batch, so k is
+    the mean active count per token. In eval mode it keeps activations above a threshold
+    estimated during training as a running average of the smallest kept activation."""
 
     def __init__(self, d, m, kind, k=None, generator=None, init_norm=1.0):
         super().__init__()
-        if kind not in ("relu", "topk"):
+        if kind not in ("relu", "topk", "batchtopk"):
             raise ValueError(kind)
-        if kind == "topk" and not k:
-            raise ValueError("topk needs k")
+        if kind in ("topk", "batchtopk") and not k:
+            raise ValueError(f"{kind} needs k")
         self.kind, self.k = kind, k
+        if kind == "batchtopk":
+            self.register_buffer("threshold", torch.zeros(()))
+            self.register_buffer("threshold_updates", torch.zeros((), dtype=torch.long))
         w = torch.randn(m, d, generator=generator)
         w = init_norm * w / w.norm(dim=1, keepdim=True)
         self.W_dec = torch.nn.Parameter(w.clone())       # m x d, each row a feature direction
@@ -224,8 +234,27 @@ class SAE(torch.nn.Module):
         pre = (x - self.b_dec) @ self.W_enc + self.b_enc
         if self.kind == "relu":
             return torch.relu(pre)
-        v, i = pre.topk(self.k, dim=-1)
-        return torch.zeros_like(pre).scatter_(-1, i, torch.relu(v))
+        if self.kind == "topk":
+            v, i = pre.topk(self.k, dim=-1)
+            return torch.zeros_like(pre).scatter_(-1, i, torch.relu(v))
+        z = torch.relu(pre)
+        if not self.training:
+            return z * (z > self.threshold)
+        v, i = z.flatten().topk(self.k * len(z))
+        self.update_threshold(v)
+        return torch.zeros_like(z).flatten().scatter_(0, i, v).view_as(z)
+
+    @torch.no_grad()
+    def update_threshold(self, kept):
+        pos = kept[kept > 0]
+        if not len(pos):
+            return
+        low = pos.min()
+        if self.threshold_updates == 0:
+            self.threshold.copy_(low)
+        else:
+            self.threshold.mul_(1 - THRESHOLD_EMA).add_(THRESHOLD_EMA * low)
+        self.threshold_updates += 1
 
     def decode(self, f):
         return f @ self.W_dec + self.b_dec
@@ -233,7 +262,7 @@ class SAE(torch.nn.Module):
     def forward(self, x):
         f = self.encode(x)
         return self.decode(f), f
-gg
+
     @torch.no_grad()
     def unit_norm_decoder(self):
         self.W_dec.div_(self.W_dec.norm(dim=1, keepdim=True).clamp_min(1e-8))
@@ -317,7 +346,9 @@ def apply_norm(x, mean, scale):
 
 @torch.no_grad()
 def monitor(model, x, batch=4096):
-    """FVU, L0 and never-fired count on a fixed normalised held-out sample."""
+    """FVU, L0 and never-fired count on a fixed normalised held-out sample, in eval mode."""
+    was_training = model.training
+    model.eval()
     err, tot, l0 = 0.0, 0.0, 0.0
     fired = torch.zeros(model.W_dec.shape[0], dtype=torch.bool, device=x.device)
     for i in range(0, len(x), batch):
@@ -328,6 +359,7 @@ def monitor(model, x, batch=4096):
         on = f > 0
         l0 += on.sum().item()
         fired |= on.any(0)
+    model.train(was_training)
     return err / tot, l0 / len(x), int((~fired).sum())
 
 
@@ -349,7 +381,7 @@ def train_run(a):
     scale = float(nz["scale"])
     total = a.steps if a.steps else int(a.passes * prep["train_tokens"]) // a.batch
 
-    cfg = dict(kind=a.kind, l1=a.l1 if a.kind == "relu" else None, k=a.k if a.kind == "topk" else None,
+    cfg = dict(kind=a.kind, l1=a.l1 if a.kind == "relu" else None, k=a.k if a.kind in ("topk", "batchtopk") else None,
                seed=a.seed, width=a.width, batch=a.batch, tokens=total * a.batch, steps=total, lr=a.lr,
                warmup=0.01, decay_from=0.8, grad_clip=a.grad_clip, l1_warmup=a.l1_warmup, init_norm=a.init_norm, chunk_shards=a.chunk_shards,
                matmul=a.matmul, optimizer="Adam", resampling=None, norm_scale=scale,
@@ -411,7 +443,7 @@ def train_run(a):
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), a.grad_clip)
             opt.step()
-            if a.kind == "topk":
+            if a.kind in ("topk", "batchtopk"):
                 model.unit_norm_decoder()
             step += 1
             last = (p, c, b + 1)
@@ -507,7 +539,7 @@ def main():
     p = sub.add_parser("train")
     add_train_args(p)
     p.add_argument("--name", required=True)
-    p.add_argument("--kind", choices=["relu", "topk"], required=True)
+    p.add_argument("--kind", choices=["relu", "topk", "batchtopk"], required=True)
     p.add_argument("--l1", type=float, default=0.0)
     p.add_argument("--k", type=int, default=0)
     p.add_argument("--seed", type=int, required=True)

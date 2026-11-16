@@ -1,0 +1,51 @@
+{
+ "defaults": {
+  "passes": 5.0,
+  "init_norm": 0.1,
+  "l1_warmup": 0.0,
+  "matmul": "tf32",
+  "lr": 0.0002,
+  "batch": 4096,
+  "width": 24000,
+  "log_every": 500,
+  "ckpt_minutes": 2
+ },
+ "runs": [
+  {
+   "name": "relu_w24000_l3_s1",
+   "kind": "relu",
+   "l1": 3,
+   "seed": 1
+  },
+  {
+   "name": "relu_w24000_l3_s2",
+   "kind": "relu",
+   "l1": 3,
+   "seed": 2
+  },
+  {
+   "name": "relu_w24000_l3_s3",
+   "kind": "relu",
+   "l1": 3,
+   "seed": 3
+  },
+  {
+   "name": "relu_w24000_l2_s1",
+   "kind": "relu",
+   "l1": 2,
+   "seed": 1
+  },
+  {
+   "name": "relu_w24000_l2_s2",
+   "kind": "relu",
+   "l1": 2,
+   "seed": 2
+  },
+  {
+   "name": "relu_w24000_l2_s3",
+   "kind": "relu",
+   "l1": 2,
+   "seed": 3
+  }
+ ]
+}
