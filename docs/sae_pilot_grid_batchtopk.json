@@ -1,0 +1,140 @@
+{
+ "defaults": {
+  "passes": 5.0,
+  "init_norm": 1.0,
+  "l1_warmup": 0.0,
+  "matmul": "tf32",
+  "lr": 0.0002,
+  "batch": 4096,
+  "log_every": 500,
+  "ckpt_minutes": 2
+ },
+ "runs": [
+  {
+   "name": "batchtopk_w12000_k32_s1",
+   "kind": "batchtopk",
+   "k": 32,
+   "width": 12000,
+   "seed": 1
+  },
+  {
+   "name": "batchtopk_w12000_k32_s2",
+   "kind": "batchtopk",
+   "k": 32,
+   "width": 12000,
+   "seed": 2
+  },
+  {
+   "name": "batchtopk_w12000_k32_s3",
+   "kind": "batchtopk",
+   "k": 32,
+   "width": 12000,
+   "seed": 3
+  },
+  {
+   "name": "batchtopk_w12000_k64_s1",
+   "kind": "batchtopk",
+   "k": 64,
+   "width": 12000,
+   "seed": 1
+  },
+  {
+   "name": "batchtopk_w12000_k64_s2",
+   "kind": "batchtopk",
+   "k": 64,
+   "width": 12000,
+   "seed": 2
+  },
+  {
+   "name": "batchtopk_w12000_k64_s3",
+   "kind": "batchtopk",
+   "k": 64,
+   "width": 12000,
+   "seed": 3
+  },
+  {
+   "name": "batchtopk_w12000_k128_s1",
+   "kind": "batchtopk",
+   "k": 128,
+   "width": 12000,
+   "seed": 1
+  },
+  {
+   "name": "batchtopk_w12000_k128_s2",
+   "kind": "batchtopk",
+   "k": 128,
+   "width": 12000,
+   "seed": 2
+  },
+  {
+   "name": "batchtopk_w12000_k128_s3",
+   "kind": "batchtopk",
+   "k": 128,
+   "width": 12000,
+   "seed": 3
+  },
+  {
+   "name": "batchtopk_w24000_k32_s1",
+   "kind": "batchtopk",
+   "k": 32,
+   "width": 24000,
+   "seed": 1
+  },
+  {
+   "name": "batchtopk_w24000_k32_s2",
+   "kind": "batchtopk",
+   "k": 32,
+   "width": 24000,
+   "seed": 2
+  },
+  {
+   "name": "batchtopk_w24000_k32_s3",
+   "kind": "batchtopk",
+   "k": 32,
+   "width": 24000,
+   "seed": 3
+  },
+  {
+   "name": "batchtopk_w24000_k64_s1",
+   "kind": "batchtopk",
+   "k": 64,
+   "width": 24000,
+   "seed": 1
+  },
+  {
+   "name": "batchtopk_w24000_k64_s2",
+   "kind": "batchtopk",
+   "k": 64,
+   "width": 24000,
+   "seed": 2
+  },
+  {
+   "name": "batchtopk_w24000_k64_s3",
+   "kind": "batchtopk",
+   "k": 64,
+   "width": 24000,
+   "seed": 3
+  },
+  {
+   "name": "batchtopk_w24000_k128_s1",
+   "kind": "batchtopk",
+   "k": 128,
+   "width": 24000,
+   "seed": 1
+  },
+  {
+   "name": "batchtopk_w24000_k128_s2",
+   "kind": "batchtopk",
+   "k": 128,
+   "width": 24000,
+   "seed": 2
+  },
+  {
+   "name": "batchtopk_w24000_k128_s3",
+   "kind": "batchtopk",
+   "k": 128,
+   "width": 24000,
+   "seed": 3
+  }
+ ]
+}
